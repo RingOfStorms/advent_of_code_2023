@@ -1,0 +1,4 @@
+env_file = ".env.local"
+
+[env]
+# AOC_SESSION = "set in .env.local"
