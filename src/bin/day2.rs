@@ -21,16 +21,6 @@ impl FromStr for Cube {
     }
 }
 
-impl Cube {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Cube::Blue => "blue",
-            Cube::Red => "red",
-            Cube::Green => "green",
-        }
-    }
-}
-
 #[derive(Debug, Eq, PartialEq, Clone)]
 struct Game {
     id: u32,

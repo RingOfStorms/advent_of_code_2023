@@ -1,6 +1,6 @@
 use aoc23::prelude::*;
 
-fn part1(input: String) -> Result<usize> {
+fn part_1(input: String) -> Result<usize> {
     let mut sum = 0;
     for line in input.lines().into_iter() {
         let chars = line.chars();
@@ -75,7 +75,56 @@ fn part_2(input: String) -> Result<u32> {
         };
         let value = first_num * 10 + last_num;
         sum += value;
-        println!("Line {line}: a:{first_num}|b:{last_num} = {value} ++ {sum}");
+        // println!("Line {line}: a:{first_num}|b:{last_num} = {value} ++ {sum}");
+    }
+    Ok(sum)
+}
+
+fn part_2_no_peek(input: String) -> Result<u32> {
+    // We can just add the text versions of the number as well and this removes the
+    // need to peek at the digit like in the above method. Idk what I like better...
+    let numbers: [(&'static str, u32); 18] = [
+        ("one", 1),
+        ("1", 1),
+        ("two", 2),
+        ("2", 2),
+        ("three", 3),
+        ("3", 3),
+        ("four", 4),
+        ("4", 4),
+        ("five", 5),
+        ("5", 5),
+        ("six", 6),
+        ("6", 6),
+        ("seven", 7),
+        ("7", 7),
+        ("eight", 8),
+        ("8", 8),
+        ("nine", 9),
+        ("9", 9),
+    ];
+    let mut sum = 0;
+    for line in input.lines().into_iter() {
+        let mut chars = line.chars();
+        let first_num = loop {
+            if let Some((_, digit)) = numbers.iter().find(|num| chars.as_str().starts_with(num.0)) {
+                break *digit;
+            }
+            if chars.next().is_none() {
+                break 0;
+            }
+        };
+        let last_num = loop {
+            if let Some((_, digit)) = numbers.iter().find(|num| chars.as_str().ends_with(num.0)) {
+                break *digit;
+            }
+            if chars.next_back().is_none() {
+                break first_num;
+            }
+        };
+        let value = first_num * 10 + last_num;
+        sum += value;
+        // println!("Line {line}: a:{first_num}|b:{last_num} = {value} ++ {sum}");
     }
     Ok(sum)
 }
@@ -85,7 +134,11 @@ async fn main() -> Result<()> {
     println!("Day 1");
     println!("=====");
     let input = utils::aoc::get_puzzle_input(1).await?;
-    println!("part 1: {}", part1(input.clone())?);
-    println!("part 2: {}", part_2(input.clone())?);
+    println!("part 1: {}", part_1(input.clone())?);
+    println!("part 2: {}\t[peek method]", part_2(input.clone())?);
+    println!(
+        "part 2: {}\t[no peek method]",
+        part_2_no_peek(input.clone())?
+    );
     Ok(())
 }
