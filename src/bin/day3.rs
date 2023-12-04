@@ -100,10 +100,8 @@ impl FromStr for Grid {
                     };
                 } else {
                     if char == '.' {
-                        // println!("Ended number seq, hit dot after {:?} {}", num, char);
                         row.push(Item::None);
                     } else {
-                        // println!("Ended number seq, hit symbol after {:?} {}", num, char);
                         row.push(Item::Symbol(char == '*'))
                     }
                     if let Some(value) = num {
@@ -118,6 +116,11 @@ impl FromStr for Grid {
                     }
                 }
             }
+
+            // This killed me, I forgot to add a check after the end of the line to see if I
+            // was still "scanning" for a number and adding it. There was 1 single number not
+            // getting parsed that was on the right edge of the grid and I could not figure it
+            // out for a while.
             if let Some(value) = num {
                 grid.numbers.push(Number {
                     value,
@@ -141,20 +144,10 @@ fn part1(input: String) -> Result<usize> {
         let is_part_no = adjacent
             .iter()
             .any(|item| matches!(item, (Item::Symbol(_), _, _)));
-
-        // ```
-        // println!(
-        //     "Checking number: {:?}, is part: {}\tadjacent: {:?}",
-        //     number.value, is_part_no, adjacent
-        // );
-        // ```
         if is_part_no {
-            // print!("{}, ", number.value);
             sum += number.value;
         }
     }
-
-    // grid.print();
     Ok(sum)
 }
 
@@ -177,17 +170,14 @@ fn part2(input: String) -> Result<usize> {
                 if gear_nums.len() >= 2 {
                     // this is lazy.. adds duplicates but w/e
                     let power = gear_nums.iter().fold(1, |pow, gear| pow * gear.value);
-                    gear_nums.iter().for_each(|g| {
-                        // println!("GEAR FOUND: {}/{}", g.value, power);
-                        used.push((g.row_index, g.char_start))
-                    });
+                    gear_nums
+                        .iter()
+                        .for_each(|g| used.push((g.row_index, g.char_start)));
                     sum += power;
                 }
             }
         }
     }
-
-    // grid.print();
     Ok(sum)
 }
 
