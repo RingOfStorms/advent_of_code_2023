@@ -3,6 +3,7 @@ use itertools::Itertools;
 use std::{
     collections::{HashMap, VecDeque},
     str::FromStr,
+    time::Instant,
 };
 
 #[derive(Debug)]
@@ -84,12 +85,41 @@ fn part2(input: String) -> Result<usize> {
     Ok(sum)
 }
 
+fn part2_revised(input: String) -> Result<usize> {
+    let mut sum = 0;
+    let cards = input
+        .lines()
+        .map(|line| line.parse::<Card>())
+        .filter_map(|card| card.ok())
+        .collect_vec();
+    let mut card_counts: HashMap<usize, usize> = HashMap::new();
+    for card in cards {
+        let count = {
+            let card_count = card_counts.entry(card.id).or_insert(1);
+            sum += *card_count;
+            *card_count
+        };
+        for card_index in 1..=card.part_2_matches {
+            *card_counts.entry(card.id + card_index).or_insert(1) += count;
+        }
+    }
+    Ok(sum)
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     println!("Day 4");
     println!("=====");
     let input = utils::aoc::get_puzzle_input(4).await?;
-    println!("part 1: {}", part1(input.clone())?);
-    println!("part 2: {}", part2(input.clone())?);
+    let start = Instant::now();
+    println!("part 1: {}\t[{:?}]", part1(input.clone())?, start.elapsed());
+    let start = Instant::now();
+    println!("part 2: {}\t[{:?}]", part2(input.clone())?, start.elapsed());
+    let start = Instant::now();
+    println!(
+        "part 2: {}\t[{:?}]\t[revised]",
+        part2_revised(input.clone())?,
+        start.elapsed()
+    );
     Ok(())
 }
