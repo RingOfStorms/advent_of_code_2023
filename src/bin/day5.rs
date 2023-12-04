@@ -3,6 +3,7 @@ use std::time::Instant;
 
 fn part1(input: String) -> Result<usize> {
     let mut answer = 0;
+    println!("Input:\n{}", input);
     Ok(answer)
 }
 
