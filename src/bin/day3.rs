@@ -30,21 +30,18 @@ impl Grid {
         }
     }
 
-    fn get_adjacent_items(&self, row: usize, start: usize, end: usize) -> Vec<(&Item, usize, usize)> {
+    fn get_adjacent_items(
+        &self,
+        row: usize,
+        start: usize,
+        end: usize,
+    ) -> Vec<(&Item, usize, usize)> {
         // println!("\tget adj: r{} s{} e{}", row, start, end);
-        let row_start = if row > 0 {
-            row - 1
-        } else {
-            0
-        };
-        let col_start = if start > 0 {
-            start - 1
-        } else {
-            0
-        };
+        let row_start = if row > 0 { row - 1 } else { 0 };
+        let col_start = if start > 0 { start - 1 } else { 0 };
         let mut items: Vec<(&Item, usize, usize)> = vec![];
-        for row_i in row_start ..= row + 1 {
-            for col_i in col_start ..= end + 1 {
+        for row_i in row_start..=row + 1 {
+            for col_i in col_start..=end + 1 {
                 if row_i != row || col_i < start || col_i > end {
                     let item = self.get_item(row_i, col_i);
 
@@ -63,14 +60,17 @@ impl Grid {
         for item in self.get_adjacent_items(row, col, col) {
             match item {
                 (Item::Digit(_), r, c) => {
-                    if let Some(number_at) =
-                        self.numbers.iter().find(|n| n.row_index == r && c >= n.char_start && c <= n.char_end) {
+                    if let Some(number_at) = self
+                        .numbers
+                        .iter()
+                        .find(|n| n.row_index == r && c >= n.char_start && c <= n.char_end)
+                    {
                         if unique_numbers.iter().all(|n| n.value != number_at.value) {
                             unique_numbers.push(number_at);
                         }
                     }
-                },
-                _ => { },
+                }
+                _ => {}
             }
         }
         unique_numbers
@@ -136,8 +136,11 @@ fn part1(input: String) -> Result<usize> {
     let grid: Grid = input.parse()?;
     let mut sum = 0;
     for number in grid.numbers.iter() {
-        let adjacent = grid.get_adjacent_items(number.row_index, number.char_start, number.char_end);
-        let is_part_no = adjacent.iter().any(|item| matches!(item, (Item::Symbol(_), _, _)));
+        let adjacent =
+            grid.get_adjacent_items(number.row_index, number.char_start, number.char_end);
+        let is_part_no = adjacent
+            .iter()
+            .any(|item| matches!(item, (Item::Symbol(_), _, _)));
 
         // ```
         // println!(
@@ -160,11 +163,16 @@ fn part2(input: String) -> Result<usize> {
     let mut sum = 0;
     let mut used: Vec<(usize, usize)> = vec![];
     for number in grid.numbers.iter() {
-        let is_used =
-            used.iter().any(|(row, char_start)| number.row_index == *row && number.char_start == *char_start);
+        let is_used = used
+            .iter()
+            .any(|(row, char_start)| number.row_index == *row && number.char_start == *char_start);
         if !is_used {
-            let adjacent = grid.get_adjacent_items(number.row_index, number.char_start, number.char_end);
-            if let Some((_, row, col)) = adjacent.iter().find(|item| matches!(item.0, Item::Symbol(true))) {
+            let adjacent =
+                grid.get_adjacent_items(number.row_index, number.char_start, number.char_end);
+            if let Some((_, row, col)) = adjacent
+                .iter()
+                .find(|item| matches!(item.0, Item::Symbol(true)))
+            {
                 let gear_nums = grid.get_adjacent_numbers(*row, *col);
                 if gear_nums.len() >= 2 {
                     // this is lazy.. adds duplicates but w/e
