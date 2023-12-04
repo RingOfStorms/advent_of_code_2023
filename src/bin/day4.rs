@@ -6,11 +6,12 @@ use std::{
     time::Instant,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 struct Card {
     id: usize,
-    part_2_matches: usize,
     part_1_score: usize,
+    part_2_matches: usize,
+    part_2_count: usize,
 }
 
 impl FromStr for Card {
@@ -56,6 +57,7 @@ impl FromStr for Card {
             id: id.ok_or("no id found")?,
             part_1_score: score,
             part_2_matches: matches,
+            part_2_count: 1,
         })
     }
 }
@@ -87,20 +89,21 @@ fn part2(input: String) -> Result<usize> {
 
 fn part2_revised(input: String) -> Result<usize> {
     let mut sum = 0;
-    let cards = input
+    let mut cards = input
         .lines()
         .map(|line| line.parse::<Card>())
         .filter_map(|card| card.ok())
         .collect_vec();
-    let mut card_counts: HashMap<usize, usize> = HashMap::new();
-    for card in cards {
-        let count = {
-            let card_count = card_counts.entry(card.id).or_insert(1);
-            sum += *card_count;
-            *card_count
+    for i in 0..cards.len() {
+        let (count, matches) = {
+            let card = cards.get(i).ok_or("card not found")?;
+            sum += card.part_2_count;
+            (card.part_2_count, card.part_2_matches)
         };
-        for card_index in 1..=card.part_2_matches {
-            *card_counts.entry(card.id + card_index).or_insert(1) += count;
+        for card_index in 1..=matches {
+            cards.get_mut(i + card_index).map(|card_below| {
+                card_below.part_2_count += count;
+            });
         }
     }
     Ok(sum)
