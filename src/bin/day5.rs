@@ -146,7 +146,6 @@ fn part1(input: String) -> Result<usize> {
         .split_whitespace()
         .map(|s| s.parse::<usize>().expect("failed to parse seed as number"))
         .map(|source| almanac.map_source(source, "seed", "location"))
-        .par_bridge()
         .min()
         .ok_or("failed to get min location")?;
     let algo_time = start.elapsed();
@@ -177,6 +176,7 @@ fn part2(input: String) -> Result<usize> {
         .map(|s| s.parse::<usize>().expect("failed to parse seed as number"))
         .tuples()
         .flat_map(|(start, length)| start..start + length)
+        // Squeeze with rayon for brute force approach
         .par_bridge()
         .map(|source| almanac.map_source(source, "seed", "location"))
         .min()
@@ -184,12 +184,13 @@ fn part2(input: String) -> Result<usize> {
     let algo_time = start.elapsed();
 
     // output
-    println!("Day 5, part 1: {answer}");
+    println!("Day 5, part 2: {answer}");
     println!("\tparse: {parsed_time:?}");
     println!("\talgo: {algo_time:?}");
     Ok(answer)
 }
 
+// TODO come back and revise for a faster solution
 #[tokio::main]
 async fn main() -> Result<()> {
     let input = utils::aoc::get_puzzle_input(5).await?;
