@@ -176,6 +176,7 @@ fn part2(input: String) -> Result<usize> {
         .map(|s| s.parse::<usize>().expect("failed to parse seed as number"))
         .tuples()
         .flat_map(|(start, length)| start..start + length)
+        .take(3000)
         // Squeeze with rayon for brute force approach
         .par_bridge()
         .map(|source| almanac.map_source(source, "seed", "location"))
