@@ -1,8 +1,5 @@
 use aoc23::prelude::*;
 use derive_builder::Builder;
-use itertools::Itertools;
-use rayon::prelude::*;
-use std::{str::FromStr, time::Instant};
 
 static DAY: u8 = 6;
 
@@ -44,37 +41,12 @@ impl Race {
     }
 }
 
-fn part1(races: &[Race]) -> Result<usize> {
-    // algo
-    let start = Instant::now();
+fn get_ways_to_beat_in_all_races(races: &[Race]) -> Result<usize> {
     let mut answer = 1;
     for race in races {
         let ways_to_beat = race.get_ways_to_beat_count();
-        println!(
-            "Race: {:?}, roots: {:?}, ways to beat: {:?}",
-            race,
-            race.get_roots(),
-            race.get_ways_to_beat_count()
-        );
         answer *= ways_to_beat;
     }
-    let algo_time = start.elapsed();
-
-    // output
-    println!("part 1: {answer}");
-    println!("\talgo: {algo_time:?}");
-    Ok(answer)
-}
-
-fn part2(races: &[Race]) -> Result<usize> {
-    // algo
-    let start = Instant::now();
-    let answer = 0;
-    let algo_time = start.elapsed();
-
-    // output
-    println!("part 2: {answer}");
-    println!("\talgo: {algo_time:?}");
     Ok(answer)
 }
 
@@ -83,6 +55,24 @@ async fn main() -> Result<()> {
     // let input = utils::aoc::get_puzzle_input(DAY).await?;
     println!("Day {DAY}");
     println!("=====");
+    let races: [Race; 3] = [
+        Race {
+            time: 7,
+            record_distance: 9,
+        },
+        Race {
+            time: 15,
+            record_distance: 40,
+        },
+        Race {
+            time: 30,
+            record_distance: 200,
+        },
+    ];
+    println!(
+        "part 1, example: {}",
+        get_ways_to_beat_in_all_races(&races)?
+    );
     let races: [Race; 4] = [
         Race {
             time: 53,
@@ -101,61 +91,19 @@ async fn main() -> Result<()> {
             record_distance: 1025,
         },
     ];
-    let races: [Race; 1] = [Race {
-        time: 53916768,
-        record_distance: 250133010811025,
-    }];
-    let races: [Race; 3] = [
-        Race {
-            time: 7,
-            record_distance: 9,
-        },
-        Race {
-            time: 15,
-            record_distance: 40,
-        },
-        Race {
-            time: 30,
-            record_distance: 200,
-        },
-    ];
+    println!("part 1, real: {}", get_ways_to_beat_in_all_races(&races)?);
     let races: [Race; 1] = [Race {
         time: 71530,
         record_distance: 940200,
     }];
-    part1(&races)?;
-    part2(&races)?;
+    println!(
+        "part 2, example: {}",
+        get_ways_to_beat_in_all_races(&races)?
+    );
+    let races: [Race; 1] = [Race {
+        time: 53916768,
+        record_distance: 250133010811025,
+    }];
+    println!("part 2, real: {}", get_ways_to_beat_in_all_races(&races)?);
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    static RACES: [Race; 3] = [
-        Race {
-            time: 7,
-            record_distance: 9,
-        },
-        Race {
-            time: 15,
-            record_distance: 40,
-        },
-        Race {
-            time: 30,
-            record_distance: 200,
-        },
-    ];
-
-    #[test]
-    fn test_part_1() -> Result<()> {
-        assert_eq!(part1(&RACES)?, 288);
-        Ok(())
-    }
-
-    #[test]
-    fn test_part_2() -> Result<()> {
-        assert_eq!(part2(&RACES)?, 0);
-        Ok(())
-    }
 }
