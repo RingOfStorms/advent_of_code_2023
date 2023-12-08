@@ -30,4 +30,4 @@ rayon = "1.8.0"
 
 [features]
 part2 = []
-default = ["part2"]
+# default = ["part2"]
