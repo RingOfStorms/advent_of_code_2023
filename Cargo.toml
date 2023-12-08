@@ -31,4 +31,4 @@ static_init = "1.0.3"
 
 [features]
 part2 = []
-# default = ["part2"]
+default = ["part2"]

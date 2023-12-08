@@ -23,36 +23,43 @@ impl Strength {
         // let mut counts = [0; 14]; let mut jokers = 0;
         for card in hand.cards.iter() {
             if card == &1 {
-                for possible_count in possible_counts.iter() {}
-                jokers += 1;
+                let mut new_possible_counts: Vec<[i32; 14]> = vec![];
+                for possible_count in possible_counts.iter() {
+                    for i in 0..14 {
+                        let mut new_counts = possible_count.clone();
+                        new_counts[i] += 1;
+                        new_possible_counts.push(new_counts);
+                    }
+                }
+                possible_counts = new_possible_counts;
             } else {
-                counts[*card as usize - 2] += 1;
+                for counts in possible_counts.iter_mut() {
+                    counts[*card as usize - 2] += 1;
+                }
             }
         }
-
-        // CURRENT BUG is that the jokers are adding to all counts so the counts are "off"
-        // for possible real hands like full house etc, need to branch off and try all
-        // combinations...
-        counts.iter().fold(Strength::HighCard, |strength, &count| {
-            std::cmp::max(
-                strength.clone(),
-                match count {
-                    5 => Strength::FiveOfAKind,
-                    4 => Strength::FourOfAKind,
-                    3 => match strength {
-                        Strength::TwoPair => Strength::FullHouse,
-                        Strength::OnePair => Strength::FullHouse,
-                        _ => Strength::ThreeOfAKind,
+        possible_counts.iter().map(|counts| {
+            counts.iter().fold(Strength::HighCard, |strength, &count| {
+                std::cmp::max(
+                    strength.clone(),
+                    match count {
+                        5 => Strength::FiveOfAKind,
+                        4 => Strength::FourOfAKind,
+                        3 => match strength {
+                            Strength::TwoPair => Strength::FullHouse,
+                            Strength::OnePair => Strength::FullHouse,
+                            _ => Strength::ThreeOfAKind,
+                        },
+                        2 => match strength {
+                            Strength::ThreeOfAKind => Strength::FullHouse,
+                            Strength::OnePair => Strength::TwoPair,
+                            _ => Strength::OnePair,
+                        },
+                        _ => strength,
                     },
-                    2 => match strength {
-                        Strength::ThreeOfAKind => Strength::FullHouse,
-                        Strength::OnePair => Strength::TwoPair,
-                        _ => Strength::OnePair,
-                    },
-                    _ => strength,
-                },
-            )
-        })
+                )
+            })
+        }).sorted().next().unwrap()
     }
 
     #[cfg(not(feature = "part2"))]
@@ -161,16 +168,17 @@ fn calculate(input: String) -> Result<usize> {
     let answer = input
         .lines()
         .map(|line| line.parse::<Hand>().unwrap())
-        .sorted()
-        .enumerate()
-        .map(|(idx, hand)| hand.bid * (idx + 1))
-        .sum();
+        .sorted().collect_vec();
+        // .enumerate()
+        // .map(|(idx, hand)| hand.bid * (idx + 1))
+        // .sum();
     let algo_time = start.elapsed();
 
     // ```
-    // for i in answer {
-    //     println!("{:?}: {:?}", i, Strength::for_hand(&i.1));
-    // }
+    for i in answer {
+        println!("{:?}: {:?}", i, Strength::for_hand(&i));
+    }
+    let answer = 0;
     // ```
     //
     // output
