@@ -4,6 +4,8 @@ use itertools::Itertools;
 use rayon::prelude::*;
 use std::{str::FromStr, time::Instant};
 
+static DAY: u8 = TODO;
+
 #[derive(Debug, Builder, Clone)]
 struct Todo {}
 
@@ -22,12 +24,12 @@ fn part1(input: String) -> Result<usize> {
     let parsed_time = start.elapsed();
 
     // algo
-    let start = Instant::now();
+    let a_start = Instant::now();
     let answer = 0;
-    let algo_time = start.elapsed();
+    let algo_time = a_start.elapsed();
 
     // output
-    println!("Day 5, part 1: {answer}");
+    println!("part 1: {answer}\t[total: {:?}]", start.elapsed());
     println!("\tparse: {parsed_time:?}");
     println!("\talgo: {algo_time:?}");
     Ok(answer)
@@ -40,18 +42,17 @@ fn part2(input: String) -> Result<usize> {
     let parsed_time = start.elapsed();
 
     // algo
-    let start = Instant::now();
+    let a_start = Instant::now();
     let answer = 0;
-    let algo_time = start.elapsed();
+    let algo_time = a_start.elapsed();
 
     // output
-    println!("Day 5, part 2: {answer}");
+    println!("part 2: {answer}\t[total: {:?}]", start.elapsed());
     println!("\tparse: {parsed_time:?}");
     println!("\talgo: {algo_time:?}");
     Ok(answer)
 }
 
-// TODO come back and revise for a faster solution
 #[tokio::main]
 async fn main() -> Result<()> {
     println!("Day {DAY}");
@@ -61,8 +62,6 @@ async fn main() -> Result<()> {
     part2(input.clone())?;
     Ok(())
 }
-
-static DAY: u8 = TODO;
 
 #[cfg(test)]
 mod tests {

@@ -1,5 +1,5 @@
 use aoc23::prelude::*;
-use std::{collections::HashMap, error::Error, fmt::Display, str::FromStr, string::ParseError};
+use std::{collections::HashMap, fmt::Display, str::FromStr};
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash)]
 enum Cube {

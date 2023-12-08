@@ -23,7 +23,6 @@ struct Grid {
 
 impl Grid {
     fn get_item(&self, row: usize, col: usize) -> Option<&Item> {
-        // println!("\t\t\tRow:{} Col:{} {:?}", row, col, self.rows.get(row));
         match self.rows.get(row) {
             Some(row) => row.get(col),
             None => None,
@@ -36,7 +35,6 @@ impl Grid {
         start: usize,
         end: usize,
     ) -> Vec<(&Item, usize, usize)> {
-        // println!("\tget adj: r{} s{} e{}", row, start, end);
         let row_start = if row > 0 { row - 1 } else { 0 };
         let col_start = if start > 0 { start - 1 } else { 0 };
         let mut items: Vec<(&Item, usize, usize)> = vec![];
@@ -44,8 +42,6 @@ impl Grid {
             for col_i in col_start..=end + 1 {
                 if row_i != row || col_i < start || col_i > end {
                     let item = self.get_item(row_i, col_i);
-
-                    // println!("\t\trow: {} col: {} item: {:?}", row_i, col_i, item);
                     if let Some(item) = item {
                         items.push((item, row_i, col_i));
                     }

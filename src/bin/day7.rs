@@ -1,7 +1,6 @@
 use aoc23::prelude::*;
 use derive_builder::Builder;
 use itertools::Itertools;
-use rayon::prelude::*;
 use std::{cmp::Ordering, str::FromStr, time::Instant};
 
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
@@ -18,51 +17,48 @@ enum Strength {
 impl Strength {
     #[cfg(feature = "part2")]
     fn for_hand(hand: &Hand) -> Self {
-        let mut possible_counts: Vec<[i32; 14]> = vec![[0; 14]];
-
-        // let mut counts = [0; 14]; let mut jokers = 0;
+        let mut counts = [0; 15];
+        let mut jokers = 0;
         for card in hand.cards.iter() {
             if card == &1 {
-                let mut new_possible_counts: Vec<[i32; 14]> = vec![];
-                for possible_count in possible_counts.iter() {
-                    for i in 0..14 {
-                        let mut new_counts = possible_count.clone();
-                        new_counts[i] += 1;
-                        new_possible_counts.push(new_counts);
-                    }
-                }
-                possible_counts = new_possible_counts;
+                jokers += 1;
             } else {
-                for counts in possible_counts.iter_mut() {
-                    counts[*card as usize - 2] += 1;
-                }
+                counts[*card as usize - 2] += 1;
             }
         }
-        possible_counts.iter().map(|counts| {
-            counts.iter().fold(Strength::HighCard, |strength, &count| {
-                std::cmp::max(
-                    strength.clone(),
-                    match count {
-                        5 => Strength::FiveOfAKind,
-                        4 => Strength::FourOfAKind,
-                        3 => match strength {
-                            Strength::TwoPair => Strength::FullHouse,
-                            Strength::OnePair => Strength::FullHouse,
-                            _ => Strength::ThreeOfAKind,
-                        },
-                        2 => match strength {
-                            Strength::ThreeOfAKind => Strength::FullHouse,
-                            Strength::OnePair => Strength::TwoPair,
-                            _ => Strength::OnePair,
-                        },
-                        _ => strength,
-                    },
-                )
-            })
-        }).sorted().next().unwrap()
+        let mut strength = counts
+            .iter()
+            .fold(Strength::HighCard, |strength, &count| match count {
+                5 => Strength::FiveOfAKind,
+                4 => Strength::FourOfAKind,
+                3 => match strength {
+                    Strength::TwoPair => Strength::FullHouse,
+                    Strength::OnePair => Strength::FullHouse,
+                    _ => Strength::ThreeOfAKind,
+                },
+                2 => match strength {
+                    Strength::ThreeOfAKind => Strength::FullHouse,
+                    Strength::OnePair => Strength::TwoPair,
+                    _ => Strength::OnePair,
+                },
+                _ => strength,
+            });
+        while jokers > 0 {
+            strength = match strength {
+                Strength::HighCard => Strength::OnePair,
+                Strength::OnePair => Strength::ThreeOfAKind,
+                Strength::TwoPair => Strength::FullHouse,
+                Strength::ThreeOfAKind => Strength::FourOfAKind,
+                Strength::FullHouse => Strength::FourOfAKind,
+                Strength::FourOfAKind => Strength::FiveOfAKind,
+                Strength::FiveOfAKind => Strength::FiveOfAKind,
+            };
+            jokers -= 1;
+        }
+        strength
     }
 
-    #[cfg(not(feature = "part2"))]
+    #[cfg(feature = "part1")]
     fn for_hand(hand: &Hand) -> Self {
         let mut counts = [0; 15];
         for card in hand.cards.iter() {
@@ -135,19 +131,19 @@ impl FromStr for Hand {
                             digit
                         } else {
                             match c {
-                                #[cfg(not(feature = "part2"))]
+                                #[cfg(feature = "part1")]
                                 'A' => 14,
                                 #[cfg(feature = "part2")]
                                 'A' => 13,
-                                #[cfg(not(feature = "part2"))]
+                                #[cfg(feature = "part1")]
                                 'K' => 13,
                                 #[cfg(feature = "part2")]
                                 'K' => 12,
-                                #[cfg(not(feature = "part2"))]
+                                #[cfg(feature = "part1")]
                                 'Q' => 12,
                                 #[cfg(feature = "part2")]
                                 'Q' => 11,
-                                #[cfg(not(feature = "part2"))]
+                                #[cfg(feature = "part1")]
                                 'J' => 11,
                                 #[cfg(feature = "part2")]
                                 'J' => 1,
@@ -168,21 +164,12 @@ fn calculate(input: String) -> Result<usize> {
     let answer = input
         .lines()
         .map(|line| line.parse::<Hand>().unwrap())
-        .sorted().collect_vec();
-        // .enumerate()
-        // .map(|(idx, hand)| hand.bid * (idx + 1))
-        // .sum();
+        .sorted()
+        .enumerate()
+        .map(|(idx, hand)| hand.bid * (idx + 1))
+        .sum();
     let algo_time = start.elapsed();
-
-    // ```
-    for i in answer {
-        println!("{:?}: {:?}", i, Strength::for_hand(&i));
-    }
-    let answer = 0;
-    // ```
-    //
-    // output
-    println!("Day 5: {answer}");
+    println!("Day {DAY}: {answer}");
     println!("\t{algo_time:?}");
     Ok(answer)
 }
@@ -211,7 +198,7 @@ QQQJA 483";
 
     #[test]
     fn test() -> Result<()> {
-        #[cfg(not(feature = "part2"))]
+        #[cfg(feature = "part1")]
         assert_eq!(calculate(DATA.to_owned())?, 6440);
         #[cfg(feature = "part2")]
         assert_eq!(calculate(DATA.to_owned())?, 5905);

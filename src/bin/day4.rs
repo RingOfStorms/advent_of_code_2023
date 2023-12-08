@@ -1,10 +1,6 @@
 use aoc23::prelude::*;
 use itertools::Itertools;
-use std::{
-    collections::{HashMap, VecDeque},
-    str::FromStr,
-    time::Instant,
-};
+use std::{collections::VecDeque, str::FromStr, time::Instant};
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
 struct Card {

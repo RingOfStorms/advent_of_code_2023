@@ -2,11 +2,7 @@ use aoc23::prelude::*;
 use derive_builder::Builder;
 use itertools::Itertools;
 use rayon::prelude::*;
-use std::{
-    collections::HashMap,
-    io::{self, Write},
-    time::Instant,
-};
+use std::{collections::HashMap, time::Instant};
 
 extern crate regex;
 
@@ -106,7 +102,7 @@ fn part1(input: String) -> Result<usize> {
     let algo_time = start.elapsed();
 
     // output
-    println!("Day 5, part 1: {answer}");
+    println!("Day {DAY}, part 1: {answer}");
     println!("\tparse: {parsed_time:?}");
     println!("\talgo: {algo_time:?}");
     Ok(answer)
@@ -142,7 +138,7 @@ fn part2(input: String) -> Result<u64> {
     let algo_time = start.elapsed();
 
     // output
-    println!("Day 5, part 2: {answer}");
+    println!("Day {DAY}, part 2: {answer}");
     println!("\tparse: {parsed_time:?}");
     println!("\talgo: {algo_time:?}");
     Ok(answer)
