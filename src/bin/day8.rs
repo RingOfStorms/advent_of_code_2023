@@ -2,12 +2,16 @@ use aoc23::prelude::*;
 use derive_builder::Builder;
 use itertools::Itertools;
 use rayon::prelude::*;
-use std::{collections::HashMap, str::FromStr, time::Instant};
+use std::{collections::HashMap, time::Instant};
 
 extern crate regex;
 
 use regex::Regex;
-use std::error::Error;
+use static_init::dynamic;
+
+#[dynamic]
+static RE_PARSE_NODE: Regex =
+    Regex::new(r"(?<id>\w{3}).*?(?<left>\w{3}).*?(?<right>\w{3})").expect("re_parse_node invalid");
 
 #[derive(Debug, Builder, Clone)]
 struct Node<'a> {
@@ -18,9 +22,9 @@ struct Node<'a> {
 
 impl<'a> Node<'a> {
     fn new(s: &'a str) -> Result<Self> {
-        let re = Regex::new(r"(?<id>\w{3}).*?(?<left>\w{3}).*?(?<right>\w{3})")?
-            .captures(s)
-            .expect("No match for regex");
+        // let re = Regex::new(r"(?`<id>`\w{3}) = ((?`<left>`\w{3}), (?`<right>`\w{3}))")?
+        // let re = Regex::new(r"(?`<id>`\w{3})._?(?`<left>`\w{3})._?(?`<right>`\w{3})")?
+        let re = RE_PARSE_NODE.captures(s).expect("No match for regex");
         Ok(NodeBuilder::default()
             .id(re.name("id").expect("no id").as_str())
             .left(re.name("left").expect("no left").as_str())
