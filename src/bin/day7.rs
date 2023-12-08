@@ -2,11 +2,7 @@ use aoc23::prelude::*;
 use derive_builder::Builder;
 use itertools::Itertools;
 use rayon::prelude::*;
-use std::{
-    cmp::Ordering,
-    str::FromStr,
-    time::Instant,
-};
+use std::{cmp::Ordering, str::FromStr, time::Instant};
 
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
 enum Strength {
@@ -27,7 +23,7 @@ impl Strength {
         // let mut counts = [0; 14]; let mut jokers = 0;
         for card in hand.cards.iter() {
             if card == &1 {
-                for possible_count in possible_counts.iter() { }
+                for possible_count in possible_counts.iter() {}
                 jokers += 1;
             } else {
                 counts[*card as usize - 2] += 1;
@@ -38,7 +34,36 @@ impl Strength {
         // for possible real hands like full house etc, need to branch off and try all
         // combinations...
         counts.iter().fold(Strength::HighCard, |strength, &count| {
-            std::cmp::max(strength.clone(), match count {
+            std::cmp::max(
+                strength.clone(),
+                match count {
+                    5 => Strength::FiveOfAKind,
+                    4 => Strength::FourOfAKind,
+                    3 => match strength {
+                        Strength::TwoPair => Strength::FullHouse,
+                        Strength::OnePair => Strength::FullHouse,
+                        _ => Strength::ThreeOfAKind,
+                    },
+                    2 => match strength {
+                        Strength::ThreeOfAKind => Strength::FullHouse,
+                        Strength::OnePair => Strength::TwoPair,
+                        _ => Strength::OnePair,
+                    },
+                    _ => strength,
+                },
+            )
+        })
+    }
+
+    #[cfg(not(feature = "part2"))]
+    fn for_hand(hand: &Hand) -> Self {
+        let mut counts = [0; 15];
+        for card in hand.cards.iter() {
+            counts[*card as usize - 2] += 1;
+        }
+        counts
+            .iter()
+            .fold(Strength::HighCard, |strength, &count| match count {
                 5 => Strength::FiveOfAKind,
                 4 => Strength::FourOfAKind,
                 3 => match strength {
@@ -53,30 +78,6 @@ impl Strength {
                 },
                 _ => strength,
             })
-        })
-    }
-
-    #[cfg(not(feature = "part2"))]
-    fn for_hand(hand: &Hand) -> Self {
-        let mut counts = [0; 15];
-        for card in hand.cards.iter() {
-            counts[*card as usize - 2] += 1;
-        }
-        counts.iter().fold(Strength::HighCard, |strength, &count| match count {
-            5 => Strength::FiveOfAKind,
-            4 => Strength::FourOfAKind,
-            3 => match strength {
-                Strength::TwoPair => Strength::FullHouse,
-                Strength::OnePair => Strength::FullHouse,
-                _ => Strength::ThreeOfAKind,
-            },
-            2 => match strength {
-                Strength::ThreeOfAKind => Strength::FullHouse,
-                Strength::OnePair => Strength::TwoPair,
-                _ => Strength::OnePair,
-            },
-            _ => strength,
-        })
     }
 }
 
@@ -116,45 +117,54 @@ impl FromStr for Hand {
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         let mut splits = s.trim().split_whitespace();
-        Ok(HandBuilder::default().cards(splits.next().unwrap().chars().map(|c| {
-            if let Some(digit) = c.to_digit(10) {
-                digit
-            } else {
-                match c {
-                    #[cfg(not(feature = "part2"))]
-                    'A' => 14,
-                    #[cfg(feature = "part2")]
-                    'A' => 13,
-                    #[cfg(not(feature = "part2"))]
-                    'K' => 13,
-                    #[cfg(feature = "part2")]
-                    'K' => 12,
-                    #[cfg(not(feature = "part2"))]
-                    'Q' => 12,
-                    #[cfg(feature = "part2")]
-                    'Q' => 11,
-                    #[cfg(not(feature = "part2"))]
-                    'J' => 11,
-                    #[cfg(feature = "part2")]
-                    'J' => 1,
-                    'T' => 10,
-                    _ => panic!("invalid card: {}", c),
-                }
-            }
-        }).collect()).bid(splits.next().unwrap().parse()?).build()?)
+        Ok(HandBuilder::default()
+            .cards(
+                splits
+                    .next()
+                    .unwrap()
+                    .chars()
+                    .map(|c| {
+                        if let Some(digit) = c.to_digit(10) {
+                            digit
+                        } else {
+                            match c {
+                                #[cfg(not(feature = "part2"))]
+                                'A' => 14,
+                                #[cfg(feature = "part2")]
+                                'A' => 13,
+                                #[cfg(not(feature = "part2"))]
+                                'K' => 13,
+                                #[cfg(feature = "part2")]
+                                'K' => 12,
+                                #[cfg(not(feature = "part2"))]
+                                'Q' => 12,
+                                #[cfg(feature = "part2")]
+                                'Q' => 11,
+                                #[cfg(not(feature = "part2"))]
+                                'J' => 11,
+                                #[cfg(feature = "part2")]
+                                'J' => 1,
+                                'T' => 10,
+                                _ => panic!("invalid card: {}", c),
+                            }
+                        }
+                    })
+                    .collect(),
+            )
+            .bid(splits.next().unwrap().parse()?)
+            .build()?)
     }
 }
 
 fn calculate(input: String) -> Result<usize> {
     let start = Instant::now();
-    let answer =
-        input
-            .lines()
-            .map(|line| line.parse::<Hand>().unwrap())
-            .sorted()
-            .enumerate()
-            .map(|(idx, hand)| hand.bid * (idx + 1))
-            .sum();
+    let answer = input
+        .lines()
+        .map(|line| line.parse::<Hand>().unwrap())
+        .sorted()
+        .enumerate()
+        .map(|(idx, hand)| hand.bid * (idx + 1))
+        .sum();
     let algo_time = start.elapsed();
 
     // ```
