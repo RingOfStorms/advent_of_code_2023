@@ -9,10 +9,8 @@ static DAY: u8 = TODO;
 #[derive(Debug, Builder, Clone)]
 struct Todo {}
 
-impl FromStr for Todo {
-    type Err = BoxE;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+impl Todo {
+    fn new(s: &str) -> Result<Self> {
         Ok(TodoBuilder::default().build()?)
     }
 }
@@ -20,7 +18,7 @@ impl FromStr for Todo {
 fn part1(input: String) -> Result<usize> {
     // parse
     let start = Instant::now();
-    let todo: Todo = input.parse()?;
+    let reading = Todo::new(&input)?;
     let parsed_time = start.elapsed();
 
     // algo
@@ -32,13 +30,14 @@ fn part1(input: String) -> Result<usize> {
     println!("part 1: {answer}\t[total: {:?}]", start.elapsed());
     println!("\tparse: {parsed_time:?}");
     println!("\talgo: {algo_time:?}");
+    println!("Input\n====\n{input}");
     Ok(answer)
 }
 
 fn part2(input: String) -> Result<usize> {
     // parse
     let start = Instant::now();
-    let todo: Todo = input.parse()?;
+    let reading = Todo::new(&input)?;
     let parsed_time = start.elapsed();
 
     // algo
@@ -59,7 +58,8 @@ async fn main() -> Result<()> {
     println!("=====");
     let input = utils::aoc::get_puzzle_input(DAY).await?;
     part1(input.clone())?;
-    part2(input.clone())?;
+
+    // part2(input.clone())?;
     Ok(())
 }
 
