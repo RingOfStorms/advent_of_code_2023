@@ -18,7 +18,7 @@ impl Todo {
 fn part1(input: String) -> Result<usize> {
     // parse
     let start = Instant::now();
-    let reading = Todo::new(&input)?;
+    let todo = Todo::new(&input)?;
     let parsed_time = start.elapsed();
 
     // algo
@@ -37,7 +37,7 @@ fn part1(input: String) -> Result<usize> {
 fn part2(input: String) -> Result<usize> {
     // parse
     let start = Instant::now();
-    let reading = Todo::new(&input)?;
+    let todo = Todo::new(&input)?;
     let parsed_time = start.elapsed();
 
     // algo
