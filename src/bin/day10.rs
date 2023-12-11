@@ -230,7 +230,27 @@ fn part2(input: String) -> Result<usize> {
 
     // algo
     let a_start = Instant::now();
-    let answer = 0;
+    let mut path = vec![];
+    loop {
+        // reached end
+        if paths[0].1.position.0 == paths[1].1.position.0
+            && paths[0].1.position.1 == paths[1].1.position.1
+        {
+            break;
+        }
+        answer += 1;
+        for path in paths.iter_mut() {
+            let next = path
+                .1
+                .connects_to()
+                .into_iter()
+                .filter(|pipe| pipe.0 != path.0.position.0 || pipe.1 != path.0.position.1)
+                .next()
+                .map(|pos| pipes.get(&pos))
+                .unwrap();
+            *path = (path.1, next);
+        }
+    }
     let algo_time = a_start.elapsed();
 
     // output
@@ -255,21 +275,56 @@ async fn main() -> Result<()> {
 mod tests {
     use super::*;
 
-    static DATA: &'static str = "..F7.
+    #[test]
+    fn test_part_1() -> Result<()> {
+        assert_eq!(
+            part1(
+                "..F7.
 .FJ|.
 SJ.L7
 |F--J
-LJ...";
-
-    #[test]
-    fn test_part_1() -> Result<()> {
-        assert_eq!(part1(DATA.to_owned())?, 8);
+LJ..."
+                    .to_owned()
+            )?,
+            8
+        );
         Ok(())
     }
 
     #[test]
     fn test_part_2() -> Result<()> {
-        assert_eq!(part2(DATA.to_owned())?, 0);
+        assert_eq!(
+            part2(
+                ".F----7F7F7F7F-7....
+.|F--7||||||||FJ....
+.||.FJ||||||||L7....
+FJL7L7LJLJ||LJ.L-7..
+L--J.L7...LJS7F-7L7.
+....F-J..F7FJ|L7L7L7
+....L7.F7||L7|.L7L7|
+.....|FJLJ|FJ|F7|.LJ
+....FJL-7.||.||||...
+....L---J.LJ.LJLJ..."
+                    .to_owned(),
+            )?,
+            8
+        );
+        assert_eq!(
+            part2(
+                "FF7FSF7F7F7F7F7F---7
+L|LJ||||||||||||F--J
+FL-7LJLJ||||||LJL-77
+F--JF--7||LJLJ7F7FJ-
+L---JF-JLJ.||-FJLJJ7
+|F|F-JF---7F7-L7L|7|
+|FFJF7L7F-JF7|JL---7
+7-L-JL7||F7|L7F-7F7|
+L.L7LFJ|||||FJL7||LJ
+L7JLJL-JLJLJL--JLJ.L"
+                    .to_owned(),
+            )?,
+            10
+        );
         Ok(())
     }
 }
