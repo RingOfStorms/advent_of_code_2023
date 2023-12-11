@@ -6,12 +6,12 @@ use std::{str::FromStr, time::Instant};
 
 static DAY: u8 = TODO;
 
-#[derive(Debug, Builder, Clone)]
+#[derive(Debug, Clone)]
 struct Todo {}
 
 impl Todo {
     fn new(s: &str) -> Result<Self> {
-        Ok(TodoBuilder::default().build()?)
+        Ok(Todo {})
     }
 }
 
