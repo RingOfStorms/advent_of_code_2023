@@ -112,7 +112,7 @@ fn part2(input: String) -> Result<usize> {
                 .split(',')
                 .map(|s| s.parse::<usize>().unwrap())
                 .collect_vec();
-            let layout = std::iter::repeat(layout).take(5).collect_vec().join("?");
+            let layout = std::iter::repeat(layout).take(5).join("?");
             let contiguous = std::iter::repeat(contiguous)
                 .take(5)
                 .flatten()
