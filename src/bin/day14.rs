@@ -36,9 +36,6 @@ impl std::hash::Hash for Dish {
     }
 }
 
-#[static_init::dynamic]
-static TILT_CACHE: HashMap<Dish, Dish> = HashMap::new();
-
 impl Dish {
     fn new(s: &str) -> Result<Self> {
         let mut grid: Option<Grid<Rock>> = None;
