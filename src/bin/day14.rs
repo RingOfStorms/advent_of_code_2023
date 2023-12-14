@@ -175,7 +175,11 @@ fn part2(input: String) -> Result<usize> {
         scores.push(dish.calculate_north_load());
         if let Some(repeated_index) = seen.get(&dish) {
             // Figure out final score based on sliding window of known scores within the
-            // repeated pattern
+            // repeated pattern:
+            //
+            // (cycles - repeated index) gives us the remaining times we need to run through. We
+            // then get the remainder of that divided by the difference of the current index minus
+            // all seen (total repeating count).
             answer = scores
                 [repeated_index - 1 + (cycles - repeated_index) % (seen.len() - repeated_index)];
             break;
