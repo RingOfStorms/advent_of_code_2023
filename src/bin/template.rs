@@ -23,7 +23,7 @@ fn part1(input: String) -> Result<usize> {
 
     // algo
     let a_start = Instant::now();
-    let answer = 0;
+    let mut answer = 0;
     let algo_time = a_start.elapsed();
 
     // output
@@ -42,7 +42,7 @@ fn part2(input: String) -> Result<usize> {
 
     // algo
     let a_start = Instant::now();
-    let answer = 0;
+    let mut answer = 0;
     let algo_time = a_start.elapsed();
 
     // output
