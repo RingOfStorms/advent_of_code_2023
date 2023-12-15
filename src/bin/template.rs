@@ -11,11 +11,13 @@ struct Todo {}
 
 impl Todo {
     fn new(s: &str) -> Result<Self> {
-        Ok(Todo {})
+        Ok(Self {})
     }
 }
 
 fn part1(input: String) -> Result<usize> {
+    println!("Input\n====\n{input}\n\n");
+
     // parse
     let start = Instant::now();
     let todo = Todo::new(&input)?;
@@ -30,7 +32,6 @@ fn part1(input: String) -> Result<usize> {
     println!("part 1: {answer}\t[total: {:?}]", start.elapsed());
     println!("\tparse: {parsed_time:?}");
     println!("\talgo: {algo_time:?}");
-    println!("Input\n====\n{input}");
     Ok(answer)
 }
 
@@ -58,8 +59,7 @@ async fn main() -> Result<()> {
     println!("=====");
     let input = utils::aoc::get_puzzle_input(DAY).await?;
     part1(input.clone())?;
-
-    // part2(input.clone())?;
+    part2(input.clone())?;
     Ok(())
 }
 
@@ -67,17 +67,15 @@ async fn main() -> Result<()> {
 mod tests {
     use super::*;
 
-    static DATA: &'static str = "TODO_REPLACE";
-
     #[test]
     fn test_part_1() -> Result<()> {
-        assert_eq!(part1(DATA.to_owned())?, 0);
+        assert_eq!(part1("REPLACE".to_owned())?, 0);
         Ok(())
     }
 
     #[test]
     fn test_part_2() -> Result<()> {
-        assert_eq!(part2(DATA.to_owned())?, 0);
+        assert_eq!(part2("REPLACE".to_owned())?, 0);
         Ok(())
     }
 }
