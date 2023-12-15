@@ -12,7 +12,7 @@ use std::path::PathBuf;
 static AOC_PUZZLE_INPUT_CACHE: &str = "aoc_puzzle_cache";
 
 pub async fn get_puzzle_input(day: u8) -> Result<String> {
-    let file_name = format!("day_{}", day);
+    let file_name = format!("day_{:02}", day);
     let cache_path = PathBuf::from(AOC_PUZZLE_INPUT_CACHE).join(file_name);
     if cache_path.exists() {
         // Read from the cache file
