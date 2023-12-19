@@ -7,5 +7,6 @@ pub mod prelude {
         self,
         common::{BoxE, Result, SError, SResult},
         config::get_config,
+        grid::GridExtras,
     };
 }
